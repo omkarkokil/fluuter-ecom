@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/constants/constant.dart';
+import 'package:test_app/screens/cart_page.dart';
 import 'package:test_app/screens/home.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -30,7 +31,16 @@ class _BottomNavBarState extends State<BottomNavBar> {
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CartPage(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.shopping_cart)),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.notifications_none),
@@ -76,7 +86,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           type: BottomNavigationBarType.fixed,
           // selectedLabelStyle: TextStyle(color: primaryColor),
           selectedFontSize: 12,
-          selectedItemColor: blackColor,
+          selectedItemColor: Colors.green,
           unselectedItemColor: whileColor40,
         ),
       ),

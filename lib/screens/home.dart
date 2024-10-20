@@ -29,58 +29,77 @@ class HomeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
-        body: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CarouselSlider(
-          options: CarouselOptions(
-            height: 200, // Adjust height as needed
-            viewportFraction: 1.0, // Full-width images
-            enlargeCenterPage: false, // Disable zoom effect
-            autoPlay: true, // Auto-play the carousel
-          ),
-          items: imageList.map((item) {
-            return Stack(
-              children: [
-                ClipRRect(
-                  child: Image.network(
-                    item.url,
-                    fit: BoxFit.cover,
-                    height: 200,
+        body: SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CarouselSlider(
+            options: CarouselOptions(
+              height: 200, // Adjust height as needed
+              viewportFraction: 1.0, // Full-width images
+              enlargeCenterPage: false, // Disable zoom effect
+              autoPlay: true, // Auto-play the carousel
+            ),
+            items: imageList.map((item) {
+              return Stack(
+                children: [
+                  ClipRRect(
+                    child: Image.network(
+                      item.url,
+                      fit: BoxFit.cover,
+                      height: 200,
+                      width: MediaQuery.of(context).size.width,
+                    ),
+                  ),
+                  Container(
                     width: MediaQuery.of(context).size.width,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color:
+                          Colors.black.withOpacity(0.5), // Darken with opacity
+                    ),
                   ),
-                ),
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5), // Darken with opacity
+                  Positioned(
+                    left: 20,
+                    top: 40,
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: Text(
+                      item.title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                          fontSize: 30),
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
+                    ),
                   ),
-                ),
-                Positioned(
-                  left: 20,
-                  top: 40,
-                  width: MediaQuery.of(context).size.width * 0.8,
-                  child: Text(
-                    item.title,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                        fontSize: 30),
-                    softWrap: true,
-                    overflow: TextOverflow.visible,
+                ],
+              );
+            }).toList(),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+              child: (Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("Products",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      )),
+                  const SizedBox(
+                    height: 20,
                   ),
-                ),
-              ],
-            );
-          }).toList(),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        const ProductItems(),
-      ],
+                  ProductsPage(),
+                ],
+              ))),
+        ],
+      ),
     )));
   }
 }
