@@ -64,6 +64,8 @@ class _HomeWidgetState extends State<HomeWidget> {
         });
       }
 
+      print(isNextPage);
+
       final res = await http.get(url);
       final Map<String, dynamic> jsonResponse = json.decode(res.body);
       List<dynamic> jsonData = jsonResponse['products'];
@@ -165,8 +167,9 @@ class _HomeWidgetState extends State<HomeWidget> {
           const SizedBox(
             height: 20,
           ),
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: isLoading
                   ? const Center(
                       child: CircularProgressIndicator(),
@@ -183,9 +186,11 @@ class _HomeWidgetState extends State<HomeWidget> {
                         const SizedBox(
                           height: 20,
                         ),
-                        ProductsPage(
-                          products: products,
-                          controller: _scrollController,
+                        Expanded(
+                          child: ProductsPage(
+                            products: products,
+                            controller: _scrollController,
+                          ),
                         ),
                         if (isLoadingMore) // Show loading indicator at the bottom
                           const Padding(
@@ -193,7 +198,9 @@ class _HomeWidgetState extends State<HomeWidget> {
                             child: CircularProgressIndicator(),
                           ),
                       ],
-                    )),
+                    ),
+            ),
+          )
         ],
       ),
     ));

@@ -21,26 +21,24 @@ class ProductsPage extends StatefulWidget {
 class _ProductsPageState extends State<ProductsPage> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GridView.builder(
-        controller: widget.controller,
-        itemCount: widget.products.length,
-        physics: const AlwaysScrollableScrollPhysics(), // Enable scrolling
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 4.0,
-          mainAxisSpacing: 4.0,
-          childAspectRatio: .8,
-        ),
-        itemBuilder: (context, index) {
-          if (index == widget.products.length) {
-            return const Center(
-                child:
-                    CircularProgressIndicator()); // Show loading indicator for more products
-          }
-          return ProductCard(product: widget.products[index]);
-        },
+    return GridView.builder(
+      controller: widget.controller,
+      itemCount: widget.products.length,
+      physics: const AlwaysScrollableScrollPhysics(), // Enable scrolling
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 4.0,
+        mainAxisSpacing: 4.0,
+        childAspectRatio: .8,
       ),
+      itemBuilder: (context, index) {
+        if (index == widget.products.length) {
+          return const Center(
+              child:
+                  CircularProgressIndicator()); // Show loading indicator for more products
+        }
+        return ProductCard(product: widget.products[index]);
+      },
     );
   }
 }
