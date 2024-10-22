@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/constants/constant.dart';
-import 'package:test_app/screens/cart_page.dart';
 import 'package:test_app/screens/home.dart';
+import 'package:test_app/screens/wish_list.dart';
+import 'package:test_app/widgets/cart_icon.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -13,9 +14,9 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   int _currentIndex = 0;
   final _pages = [
-    HomeWidget(),
+    const HomeWidget(),
     const Text('Search'),
-    const Text('Favorites'),
+    const WishListPage(),
     const Text('Profile'),
   ];
   @override
@@ -23,29 +24,23 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        leading: const SizedBox(),
+        leading: Icon(
+          Icons.shopping_bag,
+          color: Theme.of(context).brightness == Brightness.light
+              ? Colors.green
+              : Colors.green,
+        ),
         leadingWidth: 0,
         centerTitle: false,
-        title: const Text(
-          'ONESTOPSHOP',
-          style: TextStyle(fontWeight: FontWeight.w600),
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CartPage(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.shopping_cart)),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none),
+        title: const Padding(
+          padding: EdgeInsets.only(left: 10),
+          child: Text(
+            'ONESTOPSHOP',
+            style: TextStyle(
+                fontWeight: FontWeight.w600, fontSize: 16, color: Colors.green),
           ),
-        ],
+        ),
+        actions: const [CartIcon()],
       ),
       body: SafeArea(child: _pages[_currentIndex]),
       bottomNavigationBar: Container(

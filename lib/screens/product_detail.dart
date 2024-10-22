@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:provider/provider.dart';
-import 'package:test_app/constants/constant.dart';
 import 'package:test_app/providers/cart_providers.dart';
-import 'package:test_app/screens/cart_page.dart';
-import 'package:test_app/widgets/home/product_cart.dart';
+import 'package:test_app/widgets/cart_icon.dart';
 
 class ProductDetailsPage extends StatefulWidget {
-  final Product product;
+  final dynamic product;
   const ProductDetailsPage({super.key, required this.product});
 
   @override
@@ -48,22 +47,7 @@ class _MyWidgetState extends State<ProductDetailsPage> {
           },
         ),
         centerTitle: false,
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CartPage(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.shopping_cart)),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.notifications_none),
-          ),
-        ],
+        actions: const [CartIcon()],
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(16.0),
@@ -124,12 +108,12 @@ class _MyWidgetState extends State<ProductDetailsPage> {
                   final cartProvider =
                       Provider.of<CartProvider>(context, listen: false);
                   cartProvider.addItem(
-                    widget.product.title, // Product ID
-                    widget.product.title, // Product title
+                    widget.product.name, // Product ID
+                    widget.product.name, // Product name
                     widget.product.price, // Product price
                     _itemCount,
                     // Quantity to add
-                    widget.product.imageUrl, // Product price
+                    widget.product.img[0], // Product price
                     widget.product.desc, // Product price
                   );
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -153,63 +137,67 @@ class _MyWidgetState extends State<ProductDetailsPage> {
           ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10.0),
-              child: Image.network(
-                widget.product.imageUrl,
-                height: 200,
-                width: double.infinity,
-                fit: BoxFit.cover,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10.0),
+                child: Image.network(
+                  widget.product.img[0],
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 10.0, vertical: 5.0), // Padding around the badge
-              decoration: BoxDecoration(
-                color: Colors.green, // Badge background color
-                borderRadius: BorderRadius.circular(10), // Rounded corners
+              const SizedBox(
+                height: 20,
               ),
-              child: const Text(
-                "Free Shipping", // Badge text
-                style: TextStyle(
-                    color: Colors.white, fontSize: 12), // Badge text style
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                    vertical: 5.0), // Padding around the badge
+                decoration: BoxDecoration(
+                  color: Colors.green, // Badge background color
+                  borderRadius: BorderRadius.circular(10), // Rounded corners
+                ),
+                child: const Text(
+                  "Free Shipping", // Badge text
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 12), // Badge text style
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(widget.product.title,
+              const SizedBox(
+                height: 10,
+              ),
+              Text(widget.product.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 22,
+                  )),
+              const SizedBox(
+                height: 10,
+              ),
+              HtmlWidget(widget.product.desc),
+              // Text(widget.product.desc,
+              //     style: const TextStyle(
+              //       color: whileColor40,
+              //     )),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                '\$ ${widget.product.price.toStringAsFixed(2)}',
                 style: const TextStyle(
+                  fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  fontSize: 28,
-                )),
-            const SizedBox(
-              height: 10,
-            ),
-            Text(widget.product.desc,
-                style: const TextStyle(
-                  color: whileColor40,
-                )),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              '\$ ${widget.product.price.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

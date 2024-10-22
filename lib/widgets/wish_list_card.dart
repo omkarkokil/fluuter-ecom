@@ -4,44 +4,38 @@ import 'package:test_app/Models/model.dart';
 import 'package:test_app/providers/wishlist_provider.dart';
 import 'package:test_app/screens/product_detail.dart';
 
-class ProductsPage extends StatefulWidget {
-  final List<dynamic> products;
-  final ScrollController? controller;
+class WishListCard extends StatelessWidget {
+  final Map<String, Products> products;
 
-  const ProductsPage({
-    super.key,
-    required this.products,
-    this.controller,
-  });
+  const WishListCard({super.key, required this.products});
 
-  @override
-  _ProductsPageState createState() => _ProductsPageState();
-}
-
-class _ProductsPageState extends State<ProductsPage> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GridView.builder(
-        controller: widget.controller,
-        itemCount: widget.products.length,
-        physics: const AlwaysScrollableScrollPhysics(), // Enable scrolling
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 4.0,
-          mainAxisSpacing: 4.0,
-          childAspectRatio: .8,
-        ),
-        itemBuilder: (context, index) {
-          if (index == widget.products.length) {
-            return const Center(
-                child:
-                    CircularProgressIndicator()); // Show loading indicator for more products
-          }
-          return ProductCard(product: widget.products[index]);
-        },
-      ),
-    );
+    return products.isEmpty
+        ? const Text(
+            'No items in wishlist',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey,
+            ),
+          )
+        : GridView.builder(
+            shrinkWrap: true, // Important to prevent overflow
+            physics:
+                const NeverScrollableScrollPhysics(), // Disable grid scrolling
+            itemCount: products.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 4.0,
+              mainAxisSpacing: 4.0,
+              childAspectRatio: .8,
+            ),
+            itemBuilder: (context, index) {
+              final productEntry = products.entries.toList()[index];
+              final product = productEntry.value;
+              return ProductCard(product: product);
+            },
+          );
   }
 }
 
@@ -49,8 +43,6 @@ class ProductCard extends StatelessWidget {
   final Products product;
 
   const ProductCard({super.key, required this.product});
-
-  get isLoadingMore => false;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +85,6 @@ class ProductCard extends StatelessWidget {
                             ? Colors.red
                             : Colors.grey,
                     onPressed: () {
-                      print(wishlistProvider.wishlistItems);
                       wishlistProvider.mutateWishList(product);
                     },
                     icon: Icon(
@@ -129,18 +120,11 @@ class ProductCard extends StatelessWidget {
                         '\$${product.price.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 14,
-                          color: Colors.green,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
-                  // Text(product.desc,
-                  //     style: const TextStyle(
-                  //       fontSize: 12,
-                  //     ),
-                  //     maxLines: 2,
-                  //     overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),

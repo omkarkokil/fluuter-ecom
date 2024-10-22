@@ -32,36 +32,40 @@ class CartPage extends StatelessWidget {
               ),
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16.0),
-        color: Colors.white,
-        child: Row(
-          children: [
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                width: MediaQuery.of(context).size.width - 32,
-                padding: const EdgeInsets.all(12.0), // Padding around the icon
-                decoration: BoxDecoration(
-                  // Outlined border color
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(4), // Rounded corners
-                  // Background color
-                ),
-                child: const Text(
-                  "Continue", // Minus icon
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white, // Icon color
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+      bottomNavigationBar: cartItems.isEmpty
+          ? const SizedBox.shrink()
+          : Container(
+              padding: const EdgeInsets.all(16.0),
+              color: Colors.white,
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                      width: MediaQuery.of(context).size.width - 32,
+                      padding:
+                          const EdgeInsets.all(12.0), // Padding around the icon
+                      decoration: BoxDecoration(
+                        // Outlined border color
+                        color: Colors.green,
+                        borderRadius:
+                            BorderRadius.circular(4), // Rounded corners
+                        // Background color
+                      ),
+                      child: const Text(
+                        "Continue", // Minus icon
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.white, // Icon color
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
-      ),
+            ),
       body: SingleChildScrollView(
         child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -111,20 +115,6 @@ class CartPage extends StatelessWidget {
                                         ),
                                       ),
                                       const SizedBox(height: 2),
-                                      SizedBox(
-                                        width:
-                                            120, // Set the specific width you want for the text
-                                        child: Text(
-                                          item.desc,
-                                          maxLines: 2,
-                                          overflow: TextOverflow
-                                              .ellipsis, // Handles overflowing text
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      ),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -142,8 +132,14 @@ class CartPage extends StatelessWidget {
                                               children: [
                                                 GestureDetector(
                                                   onTap: () {
-                                                    cartProvider.decrementItem(
-                                                        item.title);
+                                                    if (item.quantity == 1) {
+                                                      cartProvider.removeItem(
+                                                          item.title);
+                                                    } else {
+                                                      cartProvider
+                                                          .decrementItem(
+                                                              item.title);
+                                                    }
                                                   },
                                                   child: Container(
                                                     padding: const EdgeInsets

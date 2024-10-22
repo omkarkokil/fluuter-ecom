@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:test_app/Models/model.dart';
 import 'package:test_app/widgets/home/product_cart.dart';
 
 class ImageData {
@@ -8,7 +12,14 @@ class ImageData {
   ImageData({required this.url, required this.title});
 }
 
-class HomeWidget extends StatelessWidget {
+class HomeWidget extends StatefulWidget {
+  const HomeWidget({super.key});
+
+  @override
+  _HomeWidgetState createState() => _HomeWidgetState();
+}
+
+class _HomeWidgetState extends State<HomeWidget> {
   final List<ImageData> imageList = [
     ImageData(
         url:
@@ -24,13 +35,85 @@ class HomeWidget extends StatelessWidget {
         title: "Now Grocessary at your Doorstep"),
   ];
 
-  HomeWidget({super.key});
+  List<Products> products = []; // List to store products
+  bool isLoading = false; // Variable to track loading state
+  bool isLoadingMore = false; // Variable to track loading more products
+  int page = 1; // Page counter for pagination
+  final ScrollController _scrollController =
+      ScrollController(initialScrollOffset: 0);
+
+  @override
+  void initState() {
+    print(_scrollController);
+    super.initState();
+    fetchProducts(); // Load initial data
+    _scrollController.addListener(_scrollListener);
+  }
+
+  Future<void> fetchProducts({bool isNextPage = false}) async {
+    final url = Uri.parse(
+        "http://192.168.1.6:5000/api/product/getAllproducts?page=$page");
+    try {
+      if (!isNextPage) {
+        setState(() {
+          isLoading = true; // Show loading indicator for first load
+        });
+      } else {
+        setState(() {
+          isLoadingMore = true; // Show loading indicator for more data
+        });
+      }
+
+      final res = await http.get(url);
+      final Map<String, dynamic> jsonResponse = json.decode(res.body);
+      List<dynamic> jsonData = jsonResponse['products'];
+
+      if (res.statusCode == 200) {
+        setState(() {
+          if (isNextPage) {
+            // Append the new products to the existing list
+            products.addAll(
+                jsonData.map((json) => Products.fromJson(json)).toList());
+          } else {
+            // Set the initial data
+            products = jsonData.map((json) => Products.fromJson(json)).toList();
+          }
+          isLoading = false;
+          isLoadingMore = false;
+        });
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+        isLoadingMore = false;
+      });
+      print(e);
+    }
+  }
+
+  // Scroll listener to detect when the user reaches the end
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      print("object");
+      page++; // Increment the page number
+      Future(() =>
+          fetchProducts(isNextPage: true)); // Fetch the next page of products
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return (Scaffold(
-        body: SingleChildScrollView(
-      child: Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -61,15 +144,16 @@ class HomeWidget extends StatelessWidget {
                     ),
                   ),
                   Positioned(
-                    left: 20,
+                    left: 45,
                     top: 40,
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: Text(
                       item.title,
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
                           fontWeight: FontWeight.w600,
                           color: Colors.white,
-                          fontSize: 30),
+                          fontSize: 24),
                       softWrap: true,
                       overflow: TextOverflow.visible,
                     ),
@@ -83,23 +167,35 @@ class HomeWidget extends StatelessWidget {
           ),
           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-              child: (Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Products",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      )),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ProductsPage(),
-                ],
-              ))),
+              child: isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Products",
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ProductsPage(
+                          products: products,
+                          controller: _scrollController,
+                        ),
+                        if (isLoadingMore) // Show loading indicator at the bottom
+                          const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(),
+                          ),
+                      ],
+                    )),
         ],
       ),
-    )));
+    ));
   }
 }
