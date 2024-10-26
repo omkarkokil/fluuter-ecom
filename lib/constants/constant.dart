@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 const kcontentColor = Color(0xFFF5F5F5);
 const kPrimaryColor = Color(0xffff660e);
@@ -24,3 +25,5 @@ const Color lightGreyColor = Color(0xFFF8F8F9);
 const Color darkGreyColor = Color(0xFF1C1C25);
 
 const double defaultPadding = 16.0;
+
+final String secret_key = dotenv.env['JWT_SECRET'] ?? "";

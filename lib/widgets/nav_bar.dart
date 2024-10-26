@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:test_app/constants/constant.dart';
+import 'package:test_app/providers/cart_providers.dart';
+import 'package:test_app/providers/login_provider.dart';
 import 'package:test_app/screens/home.dart';
+import 'package:test_app/screens/login_page.dart';
 import 'package:test_app/screens/wish_list.dart';
+import 'package:test_app/service/login_service.dart';
 import 'package:test_app/widgets/cart_icon.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -13,14 +18,26 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBarState extends State<BottomNavBar> {
   int _currentIndex = 0;
+  bool isLoggedIn = false;
   final _pages = [
     const HomeWidget(),
     const Text('Search'),
     const WishListPage(),
     const Text('Profile'),
   ];
+
+  final loginService = LoginService();
+  Future<void> fetchToken() async {
+    String? token = await loginService.getToken();
+    print('Token: $token');
+  }
+
   @override
   Widget build(BuildContext context) {
+    initState() {
+      fetchToken();
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -40,7 +57,41 @@ class _BottomNavBarState extends State<BottomNavBar> {
                 fontWeight: FontWeight.w600, fontSize: 16, color: Colors.green),
           ),
         ),
-        actions: const [CartIcon()],
+        actions: [
+          const CartIcon(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+            child: GestureDetector(
+              onTap: () async {
+                final loginProvider =
+                    Provider.of<LoginProvider>(context, listen: false);
+
+                if (loginProvider.isLoggedIn) {
+                  await loginProvider.logout();
+                  Provider.of<CartProvider>(context, listen: false)
+                      .removeAllItem(); // Await the logout function
+                } else {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const LoginPage();
+                  }));
+                }
+              },
+              child: CircleAvatar(
+                backgroundColor: Provider.of<LoginProvider>(context).isLoggedIn
+                    ? Colors.redAccent
+                    : Colors.black12,
+                child: Icon(
+                  Provider.of<LoginProvider>(context).isLoggedIn
+                      ? Icons.login
+                      : Icons.person,
+                  color: Provider.of<LoginProvider>(context).isLoggedIn
+                      ? Colors.white
+                      : Colors.black54,
+                ),
+              ),
+            ),
+          )
+        ],
       ),
       body: SafeArea(child: _pages[_currentIndex]),
       bottomNavigationBar: Container(
@@ -55,12 +106,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              label: 'Search',
+              icon: Icon(Icons.shopping_bag),
+              label: 'Products',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
-              label: 'Favorites',
+              label: 'Wishlist',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person),

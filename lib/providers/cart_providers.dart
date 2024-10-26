@@ -6,6 +6,11 @@ class CartProvider with ChangeNotifier {
 
   Map<String, CartItem> get cartItems => _cartItems;
 
+  void removeAllItem() {
+    _cartItems.clear();
+    notifyListeners();
+  }
+
   void removeItem(String title) {
     _cartItems.remove(title);
     notifyListeners();

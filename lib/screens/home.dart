@@ -44,16 +44,17 @@ class _HomeWidgetState extends State<HomeWidget> {
 
   @override
   void initState() {
-    print(_scrollController);
     super.initState();
-    fetchProducts(); // Load initial data
+    fetchProducts();
+    print(_scrollController);
     _scrollController.addListener(_scrollListener);
   }
 
   Future<void> fetchProducts({bool isNextPage = false}) async {
-    final url = Uri.parse(
-        "http://192.168.1.6:5000/api/product/getAllproducts?page=$page");
     try {
+      final url = Uri.parse(
+          "http://192.168.88.86:5000/api/product/getAllproducts?page=$page");
+      print(url);
       if (!isNextPage) {
         setState(() {
           isLoading = true; // Show loading indicator for first load
@@ -67,6 +68,7 @@ class _HomeWidgetState extends State<HomeWidget> {
       print(isNextPage);
 
       final res = await http.get(url);
+      print(res);
       final Map<String, dynamic> jsonResponse = json.decode(res.body);
       List<dynamic> jsonData = jsonResponse['products'];
 
@@ -91,7 +93,7 @@ class _HomeWidgetState extends State<HomeWidget> {
         isLoading = false;
         isLoadingMore = false;
       });
-      print(e);
+      print("error: $e");
     }
   }
 
@@ -99,7 +101,6 @@ class _HomeWidgetState extends State<HomeWidget> {
   void _scrollListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      print("object");
       page++; // Increment the page number
       Future(() =>
           fetchProducts(isNextPage: true)); // Fetch the next page of products

@@ -41,6 +41,14 @@ dependencies:
   http: ^0.13.6
   flutter_widget_from_html_core: ^0.15.2
   shared_preferences: ^2.3.2
+  flutter_form_builder: ^9.3.0
+  form_builder_validators: ^11.0.0
+  dio: ^5.7.0
+  dart_jsonwebtoken: ^2.14.1
+  flutter_dotenv: ^5.2.1
+  fluttertoast: ^8.2.8
+  google_sign_in: ^6.2.1
+  flutter_automation: ^2.0.0
 
 dev_dependencies:
   flutter_test:

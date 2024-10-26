@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/providers/cart_providers.dart';
+import 'package:test_app/providers/login_provider.dart';
 import 'package:test_app/widgets/cart_icon.dart';
 
 class ProductDetailsPage extends StatefulWidget {
@@ -107,20 +109,44 @@ class _MyWidgetState extends State<ProductDetailsPage> {
                 onTap: () {
                   final cartProvider =
                       Provider.of<CartProvider>(context, listen: false);
-                  cartProvider.addItem(
-                    widget.product.name, // Product ID
-                    widget.product.name, // Product name
-                    widget.product.price, // Product price
-                    _itemCount,
-                    // Quantity to add
-                    widget.product.img[0], // Product price
-                    widget.product.desc, // Product price
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Added to cart'),
-                    ),
-                  );
+                  final loginProvider =
+                      Provider.of<LoginProvider>(context, listen: false);
+
+                  if (loginProvider.isLoggedIn) {
+                    cartProvider.addItem(
+                      widget.product.name, // Product ID
+                      widget.product.name, // Product name
+                      widget.product.price, // Product price
+                      _itemCount,
+                      // Quantity to add
+                      widget.product.img[0], // Product price
+                      widget.product.desc, // Product price
+                    );
+
+                    Fluttertoast.showToast(
+                        msg: 'Added to cart', // Your message
+                        toastLength: Toast.LENGTH_SHORT, // Length of the toast
+                        gravity: ToastGravity.BOTTOM, // Position of the toast
+                        timeInSecForIosWeb:
+                            1, // Duration in seconds for iOS and web
+                        backgroundColor: Colors.black, // Background color
+                        textColor: Colors.white, // Text color
+                        fontSize: 16.0 // Font size
+                        );
+                  } else {
+                    Fluttertoast.showToast(
+                        msg: 'Please login to add to cart', // Your message
+                        toastLength: Toast.LENGTH_SHORT, // Length of the toast
+                        gravity: ToastGravity.BOTTOM, // Position of the toast
+                        timeInSecForIosWeb:
+                            1, // Duration in seconds for iOS and web
+                        backgroundColor: Colors.black, // Background color
+                        textColor: Colors.white, // Text color
+                        fontSize: 16.0 // Font size
+                        );
+                    return;
+                  }
+
                   print(cartProvider.cartItems);
                 },
                 child: Container(
