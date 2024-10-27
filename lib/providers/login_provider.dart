@@ -1,5 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:test_app/constants/constant.dart';
 import 'package:test_app/service/login_service.dart';
 
 class LoginProvider with ChangeNotifier {
@@ -13,6 +17,7 @@ class LoginProvider with ChangeNotifier {
 
   String? _token;
   bool get isLoggedIn => _token != null;
+  final Dio _dio = Dio();
 
   // Check if the user is already logged in by checking the stored token
   Future<void> checkLoginStatus() async {
@@ -30,6 +35,46 @@ class LoginProvider with ChangeNotifier {
       notifyListeners(); // Notify UI
       return true;
     } else {
+      return false;
+    }
+  }
+
+  Future<bool> signInWithGoogle() async {
+    try {
+      final GoogleSignIn googleSignIn = GoogleSignIn();
+      var googleUser = await googleSignIn.signIn();
+      print(googleUser);
+
+      final response = await _dio.post(
+        '$api/api/auth/googleAuth',
+        data: {
+          'email': googleUser!.email,
+          'name': googleUser.displayName,
+          'picture': googleUser.photoUrl,
+          'sub': googleUser.id,
+        },
+      );
+      if (response.statusCode == 200) {
+        final String token = response.data['token'];
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('jwt_token', token); // Save the token
+
+        Fluttertoast.showToast(
+            msg: 'You have successfully logged in', // Your message
+            toastLength: Toast.LENGTH_SHORT, // Length of the toast
+            gravity: ToastGravity.BOTTOM, // Position of the toast
+            timeInSecForIosWeb: 1, // Duration in seconds for iOS and web
+            backgroundColor: Colors.black, // Background color
+            textColor: Colors.white, // Text color
+            fontSize: 16.0 // Font size
+            );
+
+        return true;
+      } else {
+        print('Error during Google sign-in: ${response.data}');
+        return false;
+      }
+    } catch (error) {
       return false;
     }
   }

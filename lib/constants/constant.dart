@@ -27,3 +27,4 @@ const Color darkGreyColor = Color(0xFF1C1C25);
 const double defaultPadding = 16.0;
 
 final String secret_key = dotenv.env['JWT_SECRET'] ?? "";
+const String api = "http://192.168.48.86:5000";

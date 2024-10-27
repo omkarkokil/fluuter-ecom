@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/Models/model.dart';
+import 'package:test_app/providers/login_provider.dart';
 import 'package:test_app/providers/wishlist_provider.dart';
 import 'package:test_app/screens/product_detail.dart';
 
@@ -53,6 +54,9 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wishlistProvider = Provider.of<WishlistProvider>(context);
+    final isToken =
+        Provider.of<LoginProvider>(context, listen: false).checkLoginStatus();
+    print("$isToken Token");
 
     return GestureDetector(
       onTap: () {

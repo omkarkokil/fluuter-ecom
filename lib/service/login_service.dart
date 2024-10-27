@@ -1,5 +1,7 @@
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_app/constants/constant.dart';
@@ -8,18 +10,14 @@ class LoginService {
   final Dio _dio = Dio();
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  Future<void> signInWithGoogle() async {
+  Future<Map<String, dynamic>> signInWithGoogle() async {
     try {
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: <String>[
-          'email',
-        ],
-      );
+      final GoogleSignIn googleSignIn = GoogleSignIn();
       var googleUser = await googleSignIn.signIn();
       print(googleUser);
 
       final response = await _dio.post(
-        'http://192.168.88.86:5000/api/auth/googleAuth',
+        '$api/api/auth/googleAuth',
         data: {
           'email': googleUser!.email,
           'name': googleUser.displayName,
@@ -30,19 +28,41 @@ class LoginService {
       if (response.statusCode == 200) {
         final String token = response.data['token'];
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('jwt_token', token); // Store the token
+        await prefs.setString('jwt_token', token); // Save the token
+
+        Fluttertoast.showToast(
+            msg: 'You have successfully logged in', // Your message
+            toastLength: Toast.LENGTH_SHORT, // Length of the toast
+            gravity: ToastGravity.BOTTOM, // Position of the toast
+            timeInSecForIosWeb: 1, // Duration in seconds for iOS and web
+            backgroundColor: Colors.black, // Background color
+            textColor: Colors.white, // Text color
+            fontSize: 16.0 // Font size
+            );
+
+        return {
+          'success': true,
+          'message': response.data,
+        };
       } else {
-        throw Exception('Failed to log in with Google');
+        print('Error during Google sign-in: ${response.data}');
+        return {
+          'success': false,
+          'message': 'Invalid credentials',
+        };
       }
     } catch (error) {
-      print('Error during Google sign-in: $error');
+      return {
+        'success': false,
+        'message': 'Error: $error',
+      };
     }
   }
 
   Future<Map<String, dynamic>> login(String username, String password) async {
     try {
       final response = await _dio.post(
-        'http://192.168.88.86:5000/api/auth/loginuser', // Replace with your API endpoint
+        '$api/api/auth/loginuser', // Replace with your API endpoint
         data: {
           'email': username,
           'password': password,

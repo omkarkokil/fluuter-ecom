@@ -27,15 +27,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
   ];
 
   final loginService = LoginService();
-  Future<void> fetchToken() async {
-    String? token = await loginService.getToken();
-    print('Token: $token');
-  }
 
   @override
   Widget build(BuildContext context) {
     initState() {
-      fetchToken();
+      Provider.of<LoginProvider>(context, listen: false).checkLoginStatus();
     }
 
     return Scaffold(
