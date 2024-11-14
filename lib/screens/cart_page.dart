@@ -1,24 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:test_app/constants/constant.dart';
 import 'package:test_app/providers/cart_providers.dart';
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   const CartPage({super.key});
 
   @override
+  State<CartPage> createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  final Razorpay _razorpay = Razorpay(); // Declare Razorpay instance
+
+  @override
+  void dispose() {
+    _razorpay.clear(); // Clear Razorpay listeners when the widget is disposed
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Access the cart items from the provider
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
     final cartProvider = Provider.of<CartProvider>(context);
     final cartItems = cartProvider.cartItems.values.toList();
+
+    void openRazorpay() {
+      var options = {
+        'key': "rzp_test_TYO19kdYCxTEVJ", // Use your Razorpay API Key
+        'amount': cartProvider.totalAmount().toInt() *
+            100, // Amount in smallest currency unit (e.g., paise for INR)
+        'name': 'ONESTOPSHOP.',
+        'description': 'Payment Test',
+        'prefill': {'contact': '7219725697', 'email': 'test@razorpay.com'},
+      };
+
+      try {
+        _razorpay.open(options);
+      } catch (e) {
+        print("Error: $e");
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-            size: 17,
-          ),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 17),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -26,10 +56,7 @@ class CartPage extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           'Cart',
-          style: TextStyle(
-              color: Colors.black,
-              fontSize: 19 // Change the text color to black
-              ),
+          style: TextStyle(color: Colors.black, fontSize: 19),
         ),
       ),
       bottomNavigationBar: cartItems.isEmpty
@@ -40,23 +67,19 @@ class CartPage extends StatelessWidget {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () {},
+                    onTap: openRazorpay,
                     child: Container(
                       width: MediaQuery.of(context).size.width - 32,
-                      padding:
-                          const EdgeInsets.all(12.0), // Padding around the icon
+                      padding: const EdgeInsets.all(12.0),
                       decoration: BoxDecoration(
-                        // Outlined border color
                         color: Colors.green,
-                        borderRadius:
-                            BorderRadius.circular(4), // Rounded corners
-                        // Background color
+                        borderRadius: BorderRadius.circular(4),
                       ),
                       child: const Text(
-                        "Continue", // Minus icon
+                        "Continue",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.white, // Icon color
+                          color: Colors.white,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
@@ -215,8 +238,7 @@ class CartPage extends StatelessWidget {
                       thickness: 1, // Set thickness of the line
                       color: Colors.grey, // Color of the divider
                     ),
-                    const SizedBox(
-                        height: 10), // Space between the divider and the total
+                    const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -237,5 +259,19 @@ class CartPage extends StatelessWidget {
                   ])),
       ),
     );
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    // final cartProvider = Provider.of<CartProvider>(context);
+    // cartProvider.removeAllItem();
+    print("Payment success $response");
+    Fluttertoast.showToast(msg: "Payment Done Successfully");
+    // Do something when payment succeeds
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    // Do something when payment fails
+    Fluttertoast.showToast(msg: "Payment failed");
+    print("Payment failed $response");
   }
 }

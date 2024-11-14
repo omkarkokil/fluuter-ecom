@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 const kcontentColor = Color(0xFFF5F5F5);
 const kPrimaryColor = Color(0xffff660e);
@@ -24,7 +23,12 @@ const Color greyColor = Color(0xFFB8B5C3);
 const Color lightGreyColor = Color(0xFFF8F8F9);
 const Color darkGreyColor = Color(0xFF1C1C25);
 
+const Color primary = Color(0xFFC3E703);
+const Color secondary = Color(0xFFb1d6d2);
+const Color foreground = Color(0xFFF3F3F6);
+const Color background = Color(0xFFf0f1f2);
+
 const double defaultPadding = 16.0;
 
-final String secret_key = dotenv.env['JWT_SECRET'] ?? "";
-const String api = "http://192.168.48.86:5000";
+const String secret_key = "errorinmymind";
+const String api = "http://192.168.107.86:5000";

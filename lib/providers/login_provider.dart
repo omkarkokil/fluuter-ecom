@@ -1,3 +1,4 @@
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -17,6 +18,7 @@ class LoginProvider with ChangeNotifier {
 
   String? _token;
   bool get isLoggedIn => _token != null;
+
   final Dio _dio = Dio();
 
   // Check if the user is already logged in by checking the stored token
@@ -56,6 +58,7 @@ class LoginProvider with ChangeNotifier {
       );
       if (response.statusCode == 200) {
         final String token = response.data['token'];
+        print(response.data['token']);
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('jwt_token', token); // Save the token
 
@@ -87,21 +90,19 @@ class LoginProvider with ChangeNotifier {
     notifyListeners(); // Notify UI to update
   }
 
-  // Future<bool> login(String username, String password) async {
-  //   _isLoading = true;
-  //   notifyListeners(); // Notify listeners to show loading spinner
-
-  //   final response = await _loginService.login(username, password);
-  //   print(response);
-  //   _isLoading = false;
-  //   if (response['success']) {
-  //     _errorMessage = null;
-  //     notifyListeners();
-  //     return true; // Login successful
-  //   } else {
-  //     _errorMessage = response['message'];
-  //     notifyListeners();
-  //     return false; // Login failed
-  //   }
-  // }
+  Future<Map<String, dynamic>> userData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+    if (token != null) {
+      try {
+        print(token);
+        final jwt = JWT.verify(token, SecretKey(secret_key));
+        return jwt.payload;
+      } catch (e) {
+        print('Error decoding token: $e');
+        return {};
+      }
+    }
+    return {};
+  }
 }

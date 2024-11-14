@@ -5,9 +5,9 @@ import 'package:test_app/providers/cart_providers.dart';
 import 'package:test_app/providers/login_provider.dart';
 import 'package:test_app/screens/home.dart';
 import 'package:test_app/screens/login_page.dart';
+import 'package:test_app/screens/profile_page.dart';
 import 'package:test_app/screens/wish_list.dart';
 import 'package:test_app/service/login_service.dart';
-import 'package:test_app/widgets/cart_icon.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -23,7 +23,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     const HomeWidget(),
     const Text('Search'),
     const WishListPage(),
-    const Text('Profile'),
+    const ProfilePage(),
   ];
 
   final loginService = LoginService();
@@ -36,27 +36,41 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        leading: Icon(
-          Icons.shopping_bag,
-          color: Theme.of(context).brightness == Brightness.light
-              ? Colors.green
-              : Colors.green,
-        ),
-        leadingWidth: 0,
-        centerTitle: false,
-        title: const Padding(
-          padding: EdgeInsets.only(left: 10),
-          child: Text(
-            'ONESTOPSHOP',
-            style: TextStyle(
-                fontWeight: FontWeight.w600, fontSize: 16, color: Colors.green),
+        backgroundColor: Colors.white,
+        leading: const Padding(
+          padding: EdgeInsets.symmetric(
+              horizontal: 10.0), // Adjust padding for leading icon if needed
+          child: CircleAvatar(
+            backgroundColor: primary,
+            child: Icon(
+              Icons.shopping_bag_outlined,
+              color: Colors.black,
+            ),
           ),
         ),
+        leadingWidth: 60, // Match the width of the action avatar
+        centerTitle: true,
+        title: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Delivery address",
+              style: TextStyle(fontSize: 13, color: Colors.black45),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            Text(
+              "92 HIGH STREET,LONDON",
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: .1),
+            ),
+          ],
+        ),
         actions: [
-          const CartIcon(),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 0),
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
             child: GestureDetector(
               onTap: () async {
                 final loginProvider =
@@ -75,13 +89,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
               child: CircleAvatar(
                 backgroundColor: Provider.of<LoginProvider>(context).isLoggedIn
                     ? Colors.redAccent
-                    : Colors.black12,
+                    : foreground,
                 child: Icon(
                   Provider.of<LoginProvider>(context).isLoggedIn
                       ? Icons.login
                       : Icons.person,
                   color: Provider.of<LoginProvider>(context).isLoggedIn
-                      ? Colors.white
+                      ? foreground
                       : Colors.black54,
                 ),
               ),
@@ -96,21 +110,25 @@ class _BottomNavBarState extends State<BottomNavBar> {
             ? Colors.white
             : const Color(0xFF101015),
         child: BottomNavigationBar(
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(_currentIndex == 0 ? Icons.home : Icons.home_outlined),
               label: 'Home',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_bag),
+              icon: Icon(_currentIndex == 1
+                  ? Icons.shopping_bag
+                  : Icons.shopping_bag_outlined),
               label: 'Products',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.favorite),
+              icon: Icon(
+                  _currentIndex == 2 ? Icons.favorite : Icons.favorite_outline),
               label: 'Wishlist',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: Icon(
+                  _currentIndex == 3 ? Icons.person : Icons.person_outline),
               label: 'Profile',
             ),
           ],
@@ -126,10 +144,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
               ? Colors.white
               : const Color(0xFF101015),
           type: BottomNavigationBarType.fixed,
-          // selectedLabelStyle: TextStyle(color: primaryColor),
           selectedFontSize: 12,
-          selectedItemColor: Colors.green,
+          selectedItemColor: primary,
           unselectedItemColor: whileColor40,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
         ),
       ),
     );

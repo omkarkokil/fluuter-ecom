@@ -91,10 +91,11 @@ class LoginService {
     }
   }
 
-  Map<String, dynamic> decodeToken(String token) {
+  Future<Map<String, dynamic>> decodeToken() async {
     try {
+      String? token = await getToken();
       final jwt = JWT.verify(
-          token,
+          token!,
           SecretKey(
               secret_key)); // You can verify the token with a secret key if needed
       return jwt.payload; // Return the payload of the token

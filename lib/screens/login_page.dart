@@ -3,7 +3,6 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/providers/login_provider.dart';
-import 'package:test_app/service/login_service.dart';
 import 'package:test_app/widgets/input_field.dart';
 
 class LoginPage extends StatelessWidget {
@@ -13,7 +12,6 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final formKey = GlobalKey<FormBuilderState>();
     final loginProvider = Provider.of<LoginProvider>(context);
-    final LoginService googleAuthService = LoginService();
     final TextEditingController usernameController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
     return Scaffold(

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:test_app/providers/cart_providers.dart';
 import 'package:test_app/providers/login_provider.dart';
 import 'package:test_app/providers/wishlist_provider.dart';
 import 'package:test_app/widgets/nav_bar.dart';
 
-void main() {
+void main() async {
   runApp(
     MultiProvider(
       providers: [
@@ -30,8 +29,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
-    _loadEnv();
   }
 
   // This widget is the root of your application.
@@ -45,9 +42,5 @@ class _MyAppState extends State<MyApp> {
       ),
       home: const BottomNavBar(),
     );
-  }
-
-  Future<void> _loadEnv() async {
-    await dotenv.load(fileName: ".env");
   }
 }
